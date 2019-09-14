@@ -59,6 +59,25 @@ class DeviceApps {
     });
   }
 
+  static Future<Application> getAppScheme(String scheme,
+      [bool includeAppIcon = false]) async {
+    if (scheme.isEmpty) {
+      throw Exception('The package name can not be empty');
+    }
+
+    return _channel.invokeMethod('getAppScheme', {
+      'app_scheme': scheme,
+      'include_app_icon': includeAppIcon
+    }).then((app) {
+      if (app != null && app is Map) {
+        return Application(app);
+      }
+    }).catchError((err) {
+      print(err);
+      return null;
+    });
+  }
+
   static Future<bool> isAppInstalled(String packageName) async {
     if (packageName.isEmpty) {
       throw Exception('The package name can not be empty');

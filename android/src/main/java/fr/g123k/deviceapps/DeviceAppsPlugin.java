@@ -81,6 +81,15 @@ public class DeviceAppsPlugin implements MethodCallHandler, PluginRegistry.ViewD
                     result.success(getApp(packageName, includeAppIcon));
                 }
                 break;
+            case "getAppScheme":
+                if (!call.hasArgument("app_scheme") || TextUtils.isEmpty(call.argument("app_scheme").toString())) {
+                    result.error("ERROR", "Empty or null app_scheme", null);
+                } else {
+                    String packageName = call.argument("app_scheme").toString();
+                    boolean includeAppIcon = call.hasArgument("include_app_icon") && (Boolean) (call.argument("include_app_icon"));
+                    result.success(getAppScheme(packageName, includeAppIcon));
+                }
+                break;
             case "isAppInstalled":
                 if (!call.hasArgument("package_name") || TextUtils.isEmpty(call.argument("package_name").toString())) {
                     result.error("ERROR", "Empty or null package name", null);
@@ -162,6 +171,20 @@ public class DeviceAppsPlugin implements MethodCallHandler, PluginRegistry.ViewD
     private Map<String, Object> getApp(String packageName, boolean includeAppIcon) {
         try {
             PackageManager packageManager = activity.getPackageManager();
+            return getAppData(packageManager, packageManager.getPackageInfo(packageName, 0), includeAppIcon);
+        } catch (PackageManager.NameNotFoundException ignored) {
+            return null;
+        }
+    }
+
+    private Map<String, Object> getAppScheme(String scheme, boolean includeAppIcon) {
+        try {
+            PackageManager packageManager = activity.getPackageManager();
+            Intent launchIntent = new Intent(Intent.ACTION_VIEW);
+            launchIntent.setData(Uri.parse(scheme));
+            ComponentName componentName =
+                    launchIntent.resolveActivity(getPackageManager());
+            String packageName = componentName.getPackageName();
             return getAppData(packageManager, packageManager.getPackageInfo(packageName, 0), includeAppIcon);
         } catch (PackageManager.NameNotFoundException ignored) {
             return null;
