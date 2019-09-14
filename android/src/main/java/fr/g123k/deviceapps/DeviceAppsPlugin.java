@@ -25,6 +25,10 @@ import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 import io.flutter.view.FlutterNativeView;
+import android.net.Uri;
+import android.os.Bundle;
+import static android.content.pm.PackageManager.MATCH_DEFAULT_ONLY;
+import android.content.ComponentName;
 
 /**
  * DeviceAppsPlugin
@@ -183,7 +187,7 @@ public class DeviceAppsPlugin implements MethodCallHandler, PluginRegistry.ViewD
             Intent launchIntent = new Intent(Intent.ACTION_VIEW);
             launchIntent.setData(Uri.parse(scheme));
             ComponentName componentName =
-                    launchIntent.resolveActivity(getPackageManager());
+                    launchIntent.resolveActivity(packageManager);
             String packageName = componentName.getPackageName();
             return getAppData(packageManager, packageManager.getPackageInfo(packageName, 0), includeAppIcon);
         } catch (PackageManager.NameNotFoundException ignored) {
